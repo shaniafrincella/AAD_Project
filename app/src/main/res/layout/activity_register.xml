@@ -76,18 +76,19 @@
             android:layout_marginTop="30dp"
             android:background="@color/black"
             android:fontFamily="@font/muli_black"
+            android:onClick="onCreateAccountClick"
             android:text="@string/register"
             android:textColor="@color/white" />
 
         <Button
-            android:id="@+id/login_button"
+            android:id="@+id/login_page_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/margin_top"
             android:background="@color/white_transparent"
             android:fontFamily="@font/muli_black"
-            android:onClick="onLoginClick"
+            android:onClick="onShiftToLoginClick"
             android:text="@string/login"
             android:textAlignment="center"
             android:textAllCaps="true"

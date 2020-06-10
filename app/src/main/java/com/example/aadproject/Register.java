@@ -1,21 +1,27 @@
 package com.example.aadproject;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class Register extends AppCompatActivity {
     private EditText editTextFullName, editTextEmail, editTextPassword;
     private Button buttonRegister, buttonLogin;
     private FirebaseAuth firebaseAuth;
-    private ProgressBar progressBar; //
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,19 +32,50 @@ public class Register extends AppCompatActivity {
         editTextEmail = findViewById(R.id.enter_email);
         editTextPassword = findViewById(R.id.enter_password);
         buttonRegister = findViewById(R.id.register_button);
-        buttonLogin = findViewById(R.id.login_button);
+        buttonLogin = findViewById(R.id.login_page_button);
 
         firebaseAuth = FirebaseAuth.getInstance();
         progressBar = findViewById(R.id.progress_bar);
 
-        /*buttonRegister.setOnClickListener(View.OnClickListener
-        ));*/
-
     }
 
-    public void onLoginClick(View view) {
+    public void onShiftToLoginClick(View view) {
         Intent intent = new Intent(this, Login.class);
         startActivity(intent);
         finish();
+    }
+
+    public void onCreateAccountClick(View view) {
+        String email = editTextEmail.getText().toString().trim();
+        String password = editTextPassword.getText().toString().trim();
+
+        if (TextUtils.isEmpty(email)) {
+            editTextEmail.setError("Email cannot be empty.");
+            return;
+        }
+
+        if (TextUtils.isEmpty(password)) {
+            editTextPassword.setError("Password cannot be empty.");
+            return;
+        }
+        if (password.length() < 10) {
+            editTextPassword.setError("Password must be at least 10 characters.");
+            return;
+        }
+
+        progressBar.setVisibility(View.VISIBLE);
+
+        firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(Register.this, "User Created.", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                } else {
+                    Toast.makeText(Register.this, "Error ! " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 }
