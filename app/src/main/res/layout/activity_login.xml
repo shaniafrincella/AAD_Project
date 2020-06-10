@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Login"
+    android:background="@color/background_colour"
     android:padding="@dimen/layout_activity_padding"
-    android:background="@color/background_colour">
+    tools:context=".Login">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,22 +17,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="80dp"
+            android:fontFamily="@font/muli_black"
             android:text="@string/login"
             android:textAllCaps="true"
-            android:fontFamily="@font/muli_black"
             android:textColor="@color/black"
-            android:textSize="40sp"/>
+            android:textSize="40sp" />
 
         <EditText
-            android:id="@+id/enter_username"
+            android:id="@+id/enter_email"
             android:layout_width="@dimen/text_box_width"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="50dp"
             android:background="@color/white"
+            android:drawableStart="@drawable/email_icon"
+            android:drawablePadding="10dp"
+            android:hint="@string/enter_email_text"
+            android:inputType="textEmailAddress"
             android:padding="@dimen/text_box_padding"
-            android:hint="@string/enter_username_text"
-            android:textColorHint="@color/light_grey"/>
+            android:textColor="@color/black"
+            android:textColorHint="@color/light_grey" />
 
         <EditText
             android:id="@+id/enter_password"
@@ -41,9 +45,13 @@
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/margin_top"
             android:background="@color/white"
-            android:padding="@dimen/text_box_padding"
+            android:drawableStart="@drawable/password_icon"
+            android:drawablePadding="10dp"
             android:hint="@string/enter_password_text"
-            android:textColorHint="@color/light_grey"/>
+            android:inputType="textPassword"
+            android:padding="@dimen/text_box_padding"
+            android:textColor="@color/black"
+            android:textColorHint="@color/light_grey" />
 
         <Button
             android:id="@+id/login_button"
@@ -54,20 +62,21 @@
             android:background="@color/black"
             android:fontFamily="@font/muli_black"
             android:text="@string/login"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/create_account_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textAllCaps="true"
             android:layout_marginTop="@dimen/margin_top"
             android:background="@color/white_transparent"
             android:fontFamily="@font/muli_black"
+            android:onClick="onCreateAccountClick"
             android:text="@string/create_account_text"
             android:textAlignment="center"
-            android:textColor="@color/black"/>
+            android:textAllCaps="true"
+            android:textColor="@color/black" />
     </LinearLayout>
 </ScrollView>
 

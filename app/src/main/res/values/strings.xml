@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">AAD Project</string>
     <string name="login">Login</string>
-    <string name="enter_username_text">Enter Email</string>
-    <string name="enter_password_text">Enter Password</string>
+    <string name="enter_email_text">Email</string>
+    <string name="enter_password_text">Password</string>
     <string name="create_account_text">Create Account</string>
+    <string name="enter_full_name_text">Full Name</string>
+    <string name="register">Register</string>
 </resources>
