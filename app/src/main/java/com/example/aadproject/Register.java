@@ -3,7 +3,9 @@ package com.example.aadproject;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -23,6 +25,9 @@ public class Register extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private ProgressBar progressBar;
 
+    private SharedPreferences sharedPreferences;
+    public static final String EMAIL_KEY = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +42,7 @@ public class Register extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         progressBar = findViewById(R.id.progress_bar);
 
+        sharedPreferences = getSharedPreferences("SHARED", Context.MODE_PRIVATE);
     }
 
     public void onShiftToLoginClick(View view) {
@@ -70,12 +76,23 @@ public class Register extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Toast.makeText(Register.this, "User Created.", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(EMAIL_KEY, editTextEmail.getText().toString());
+                    editor.commit();
+                    startActivity(new Intent(getApplicationContext(), MapActivity.class));
                 } else {
                     Toast.makeText(Register.this, "Error ! " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.GONE);
                 }
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (sharedPreferences.contains(EMAIL_KEY)) {
+            editTextEmail.setText(sharedPreferences.getString(EMAIL_KEY, " "));
+        }
     }
 }

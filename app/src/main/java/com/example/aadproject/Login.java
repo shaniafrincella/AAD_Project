@@ -3,7 +3,9 @@ package com.example.aadproject;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -17,11 +19,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class Login extends AppCompatActivity {
+public class  Login extends AppCompatActivity {
     private EditText editTextEmailLogin, editTextPasswordLogin;
     private Button buttonLogin, buttonRegister;
     private ProgressBar progressBar;
     private FirebaseAuth firebaseAuth;
+
+    private SharedPreferences sharedPreferences;
+    public static final String EMAIL_KEY = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +40,8 @@ public class Login extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         progressBar = findViewById(R.id.progress_bar);
+
+        sharedPreferences = getSharedPreferences("SHARED", Context.MODE_PRIVATE);
     }
 
     public void onShiftToCreateAccountClick(View view) {
@@ -70,12 +77,30 @@ public class Login extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Toast.makeText(Login.this, "Login Successful.", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(EMAIL_KEY, editTextEmailLogin.getText().toString());
+                    editor.commit();
+
+                    startActivity(new Intent(getApplicationContext(), MapActivity.class));
                 } else {
                     Toast.makeText(Login.this, "Error ! " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+
                     progressBar.setVisibility(View.GONE);
+
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(EMAIL_KEY, editTextEmailLogin.getText().toString());
+                    editor.commit();
                 }
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (sharedPreferences.contains(EMAIL_KEY)) {
+            editTextEmailLogin.setText(sharedPreferences.getString(EMAIL_KEY, " "));
+        }
     }
 }
