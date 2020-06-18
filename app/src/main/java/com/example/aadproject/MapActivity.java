@@ -2,6 +2,7 @@ package com.example.aadproject;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -9,6 +10,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -24,7 +26,9 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApi;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -34,6 +38,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,6 +56,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
+    public static final int PROXIMITY_RADIUS = 2000;
+    private GoogleApi googleApi;
 
     //widgets
     private EditText editTextSearchText;
@@ -59,6 +67,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     private Boolean aBooleanLocationPermissionGranted = false;
     private GoogleMap mMap;
     private LatLng mLatLng;
+
+    private LocationRequest request;
 
     //Google API object
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -73,6 +83,28 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             getLocationPermission();
             init();
         }
+        //Initialize Bottom Navigation
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.map_bottom_navigation);
+
+        // Select Map
+        bottomNavigationView.setSelectedItemId(R.id.map);
+
+        // Switch between activity
+        bottomNavigationView.setOnNavigationItemSelectedListener(new OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.user_profile:
+                        Intent intent1 = new Intent(MapActivity.this, UserProfile.class);
+                        startActivity(intent1);
+                        break;
+                    case R.id.map:
+                        break;
+                }
+                return false;
+            }
+        });
+
     }
 
     public boolean isGoogleServicesAvailable() {
@@ -241,4 +273,29 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             }
         }
     }
+
+
+    public void findRestaurant(View view) {
+        StringBuilder stringBuilder = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        String locationStr = mLatLng.latitude + "," + mLatLng.longitude;
+        stringBuilder.append("location=" + locationStr);
+        stringBuilder.append("&radius=" + 1000);
+        stringBuilder.append("&type=" + "restaurant");
+        stringBuilder.append("&sensor=true");
+        stringBuilder.append("&key=" + getResources().getString(R.string.google_api_key));
+
+        String url = stringBuilder.toString();
+        System.out.println(url);
+
+        Object passData[] = new Object[2];
+        passData[0] = mMap;
+        passData[1] = url;
+
+        NearbyRestaurant nearbyRestaurant = new NearbyRestaurant();
+        nearbyRestaurant.execute(passData);
+        Log.d(TAG, "Locating Restaurant");
+        Toast.makeText(this, "Showing Nearby Restaurants", Toast.LENGTH_LONG).show();
+
+    }
+
 }
