@@ -6,6 +6,7 @@
     <color name="background_colour">#fece2f</color>
     <color name="black">#000000</color>
     <color name="light_grey">#B0B6B3B3</color>
-    <color name="white">#BEFFFFFF</color>
+    <color name="grey">#BEFFFFFF</color>
+    <color name="white">#FFFFFF</color>
     <color name="white_transparent">#00FFFFFF</color>
 </resources>

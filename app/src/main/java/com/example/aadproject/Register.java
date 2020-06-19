@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,18 +16,27 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Register extends AppCompatActivity {
+    private static final String TAG = "Register";
     private EditText editTextFullName, editTextEmail, editTextPassword;
     private Button buttonRegister, buttonLogin;
     private FirebaseAuth firebaseAuth;
     private ProgressBar progressBar;
+    private String userID;
 
     private SharedPreferences sharedPreferences;
     public static final String EMAIL_KEY = "";
+    private FirebaseFirestore firebaseFirestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +50,7 @@ public class Register extends AppCompatActivity {
         buttonLogin = findViewById(R.id.login_page_button);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        firebaseFirestore = FirebaseFirestore.getInstance();
         progressBar = findViewById(R.id.progress_bar);
 
         sharedPreferences = getSharedPreferences("SHARED", Context.MODE_PRIVATE);
@@ -52,8 +63,10 @@ public class Register extends AppCompatActivity {
     }
 
     public void onCreateAccountClick(View view) {
-        String email = editTextEmail.getText().toString().trim();
+        final String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
+        final String fullName = editTextFullName.getText().toString();
+
 
         if (TextUtils.isEmpty(email)) {
             editTextEmail.setError("Email cannot be empty.");
@@ -76,6 +89,19 @@ public class Register extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Toast.makeText(Register.this, "User Created.", Toast.LENGTH_SHORT).show();
+                    // To store user data in Firebase database
+                    userID = firebaseAuth.getCurrentUser().getUid();
+                    DocumentReference documentReference = firebaseFirestore.collection("Users").document(userID);
+                    final Map<String, Object> user = new HashMap<>();
+                    user.put("fullName", fullName);
+                    user.put("email", email);
+                    documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "onSuccess: user profile is created for " + userID);
+                        }
+                    });
+                    //
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString(EMAIL_KEY, editTextEmail.getText().toString());
                     editor.commit();

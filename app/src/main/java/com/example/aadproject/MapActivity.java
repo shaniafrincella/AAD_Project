@@ -2,11 +2,13 @@ package com.example.aadproject;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -23,6 +25,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -41,7 +45,18 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -73,6 +88,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     //Google API object
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
+    private ArrayList restaurantArrayListNew;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,6 +117,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                         startActivity(intent1);
                         break;
                     case R.id.map:
+                        break;
+                    case R.id.restaurant:
+                        Intent intent2 = new Intent(MapActivity.this, ListNearbyRestaurant.class);
+                        startActivity(intent2);
                         break;
                 }
                 return false;
@@ -274,7 +296,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         }
     }
 
-
     public void findRestaurant(View view) {
         StringBuilder stringBuilder = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         String locationStr = mLatLng.latitude + "," + mLatLng.longitude;
@@ -291,11 +312,29 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         passData[0] = mMap;
         passData[1] = url;
 
-        NearbyRestaurant nearbyRestaurant = new NearbyRestaurant();
+        NearbyRestaurant nearbyRestaurant = new NearbyRestaurant(new NearbyRestaurant.taskInterface() {
+            @Override
+            public void passResult(ArrayList restaurantArrayList) {
+                System.out.println(restaurantArrayList);
+                System.out.println("WOWOWOWOWOWW" + restaurantArrayList.size());
+                restaurantArrayListNew = restaurantArrayList;
+                for (int i = 0; i < restaurantArrayListNew.size(); i++) {
+
+                    System.out.println(restaurantArrayListNew.get(i));
+                    RestaurantDetail x = (RestaurantDetail) restaurantArrayListNew.get(i);
+                    System.out.println(x.getName());
+                    System.out.println(x.getVicinity());
+                    System.out.println(x.getRating());
+                    System.out.println(x.getPricelevel());
+                }
+            }
+        });
         nearbyRestaurant.execute(passData);
         Log.d(TAG, "Locating Restaurant");
         Toast.makeText(this, "Showing Nearby Restaurants", Toast.LENGTH_LONG).show();
 
+        Intent intent = new Intent(MapActivity.this, ListNearbyRestaurant.class);
+        intent.putExtra("mylist", restaurantArrayListNew);
+        startActivity(intent);
     }
-
 }

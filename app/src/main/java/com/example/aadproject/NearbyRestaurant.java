@@ -1,13 +1,11 @@
 package com.example.aadproject;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.widget.LinearLayout;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -17,14 +15,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class NearbyRestaurant extends AsyncTask<Object, String, String> {
 
@@ -34,7 +36,18 @@ public class NearbyRestaurant extends AsyncTask<Object, String, String> {
     BufferedReader bufferedReader;
     StringBuilder stringBuilder;
     String data;
-    RecyclerView recyclerView;
+    ArrayList<RestaurantDetail> restaurantArrayList;
+
+
+    interface taskInterface {
+        void passResult(ArrayList restaurantArrayList);
+    }
+
+    taskInterface delegate = null;
+
+    NearbyRestaurant(taskInterface delegate) {
+        this.delegate = delegate;
+    }
 
     @Override
     protected String doInBackground(Object... objects) {
@@ -72,6 +85,7 @@ public class NearbyRestaurant extends AsyncTask<Object, String, String> {
             JSONObject parentObject = new JSONObject(data);
             JSONArray resultsArray = parentObject.getJSONArray("results");
 
+            restaurantArrayList = new ArrayList<>();
             for (int i = 0; i < resultsArray.length(); i++) {
                 JSONObject jsonObject = resultsArray.getJSONObject(i);
                 JSONObject locationObj = jsonObject.getJSONObject("geometry").getJSONObject("location");
@@ -81,9 +95,24 @@ public class NearbyRestaurant extends AsyncTask<Object, String, String> {
 
                 JSONObject nameObject = resultsArray.getJSONObject(i);
                 String name_restaurant = nameObject.getString("name");
+
+                String price_level = "";
+                try {
+                    price_level = nameObject.getString("price_level");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                String rating = "";
+                try {
+                    rating = nameObject.getString("rating");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 String vicinity = nameObject.getString("vicinity");
 
-                System.out.println(name_restaurant + " ~ " + vicinity + " ~ " + latitude + "/" + longitude);
+                System.out.println(name_restaurant + " ~ " + vicinity + " ~ " + rating + " ~ " + price_level);
 
                 LatLng latLng = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
 
@@ -96,11 +125,11 @@ public class NearbyRestaurant extends AsyncTask<Object, String, String> {
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
                 mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
-
+                restaurantArrayList.add(new RestaurantDetail(name_restaurant, vicinity, rating, price_level));
             }
+            delegate.passResult(restaurantArrayList);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
 }
