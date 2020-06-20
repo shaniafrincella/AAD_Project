@@ -1,49 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_colour"
-    android:padding="@dimen/layout_activity_padding">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/list_restaurant"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_colour"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/restaurant_name"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="Restaurant Name"
+            android:textColor="@color/black"
+            android:textSize="@dimen/restaurant_name_display"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/address_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/restaurant_name"
+            android:text="Address:"
+            android:textColor="@color/black"
+            android:textSize="@dimen/restaurant_information_display" />
+
+        <TextView
+            android:id="@+id/address"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/restaurant_name"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/address_title"
+            android:ellipsize="end"
+            android:text="Address"
+            android:textColor="@color/black"
+            android:textSize="@dimen/restaurant_information_display" />
+
+        <TextView
+            android:id="@+id/rating_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/address"
+            android:text="Rating:"
+            android:textColor="@color/black"
+            android:textSize="@dimen/restaurant_information_display" />
+
+        <TextView
+            android:id="@+id/rating"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/address"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/rating_title"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Rating"
+            android:textColor="@color/black"
+            android:textSize="@dimen/restaurant_information_display" />
+
+        <TextView
+            android:id="@+id/price_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rating"
+            android:text="Price Level:"
+            android:textColor="@color/black"
+            android:textSize="@dimen/restaurant_information_display" />
+
+        <TextView
+            android:id="@+id/price"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rating"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/price_title"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Price Level"
+            android:textColor="@color/black"
+            android:textSize="@dimen/restaurant_information_display" />
+
+        <ImageView
+            android:id="@id/image"
+            android:layout_width="@dimen/display_image_size"
+            android:layout_height="@dimen/display_image_size"
+            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@id/restaurant_name" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:background="@color/grey">
-        <TextView
-            android:id="@+id/restaurant_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Restaurant Name"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            android:textSize="25sp"/>
-        <TextView
-            android:id="@+id/address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Address:"
-            android:layout_below="@+id/restaurant_name"
-            android:textColor="@color/black"
-            android:textSize="20sp"/>
-        <TextView
-            android:id="@+id/rating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Rating:"
-            android:layout_below="@+id/address"
-            android:textColor="@color/black"
-            android:textSize="20sp"/>
-        <TextView
-            android:id="@+id/price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Price Level:"
-            android:layout_below="@+id/rating"
-            android:textColor="@color/black"
-            android:textSize="20sp"/>
+        android:layout_below="@id/list_restaurant">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp" />
     </RelativeLayout>
 
 </RelativeLayout>

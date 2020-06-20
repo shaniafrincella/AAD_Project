@@ -106,6 +106,7 @@ public class Register extends AppCompatActivity {
                     editor.putString(EMAIL_KEY, editTextEmail.getText().toString());
                     editor.commit();
                     startActivity(new Intent(getApplicationContext(), MapActivity.class));
+                    finish();
                 } else {
                     Toast.makeText(Register.this, "Error ! " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.GONE);

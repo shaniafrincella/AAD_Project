@@ -6,4 +6,5 @@
     <string name="create_account_text">Create Account</string>
     <string name="enter_full_name_text">Full Name</string>
     <string name="register">Register</string>
+    <string name="GOOGLEAPIKEY">AIzaSyBEXnUxHd8o16Mz-DB6TmLZpmyAGnWvlK0</string>
 </resources>

@@ -2,13 +2,11 @@ package com.example.aadproject;
 
 import android.Manifest;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -25,14 +23,12 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApi;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -45,25 +41,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
-
+    public BottomNavigationView bottomNavigationView;
     private static final String TAG = "MapActivity";
     // handle the error for invalid services version
     private static final int ERROR_DIALOG_REQUEST = 9001;
@@ -74,27 +60,23 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     public static final int PROXIMITY_RADIUS = 2000;
     private GoogleApi googleApi;
 
-    //widgets
+    //List of widgets
     private EditText editTextSearchText;
     private ImageView mGPS;
 
-    //variable
-    private Boolean aBooleanLocationPermissionGranted = false;
+    //List of variables
+    private Boolean locationPermissionGranted = false;
     private GoogleMap mMap;
     private LatLng mLatLng;
 
-    private LocationRequest request;
-
-    //Google API object
-    private FusedLocationProviderClient mFusedLocationProviderClient;
-
-    private ArrayList restaurantArrayListNew;
-
+    // Google API object
+    private FusedLocationProviderClient fusedLocationProviderClient;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
         editTextSearchText = findViewById(R.id.input_search);
         mGPS = findViewById(R.id.gps_icon);
         if (isGoogleServicesAvailable()) {
@@ -102,9 +84,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             init();
         }
         //Initialize Bottom Navigation
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.map_bottom_navigation);
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.map_bottom_navigation);
 
-        // Select Map
+        // Select Map Icon
         bottomNavigationView.setSelectedItemId(R.id.map);
 
         // Switch between activity
@@ -114,14 +96,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 switch (item.getItemId()) {
                     case R.id.user_profile:
                         Intent intent1 = new Intent(MapActivity.this, UserProfile.class);
+                        intent1.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         startActivity(intent1);
-                        break;
+                        return true;
                     case R.id.map:
-                        break;
+                        return true;
                     case R.id.restaurant:
-                        Intent intent2 = new Intent(MapActivity.this, ListNearbyRestaurant.class);
+                        Intent intent2 = new Intent(MapActivity.this, RestaurantRecyclerView.class);
+                        intent2.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         startActivity(intent2);
-                        break;
+                        return true;
                 }
                 return false;
             }
@@ -168,7 +152,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick:clicked gps icon");
-                getDeviceLocation();
+                getCurrentDeviceLocation();
             }
         });
     }
@@ -192,11 +176,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         }
     }
 
-    private void getDeviceLocation() {
+    private void getCurrentDeviceLocation() {
         Log.d(TAG, "getCurrentDeviceLocation: getting the devices current location");
         // getting the location
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
             @Override
             public void onComplete(@NonNull Task<Location> task) {
                 Location currentLocation = task.getResult();
@@ -206,7 +190,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                     moveCamera(mLatLng, DEFAULT_ZOOM, "My Location");
                 } else {
                     Log.d(TAG, "onComplete: current location is null");
-                    Toast.makeText(MapActivity.this, "Unable to get current location", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MapActivity.this, "Unable to locate current location", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -238,8 +222,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
         mMap = googleMap;
 
-        if (aBooleanLocationPermissionGranted) {
-            getDeviceLocation();
+        // Showing the device's current location in the map
+        if (locationPermissionGranted) {
+            getCurrentDeviceLocation();
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
@@ -258,9 +243,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            aBooleanLocationPermissionGranted = true;
+            locationPermissionGranted = true;
             initMap();
-            //retrieveLastLocation();
         } else {
             ActivityCompat.requestPermissions(this,
                     permissions,
@@ -274,7 +258,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                                            @NonNull int[] grantResults) {
         Log.d(TAG, "onRequestPermissionResult: calling for request");
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        aBooleanLocationPermissionGranted = false;
+        locationPermissionGranted = false;
 
         switch (requestCode) {
             case LOCATION_PERMISSION_REQUEST_CODE: {
@@ -282,14 +266,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                     // checking more than one permission
                     for (int i = 0; i < grantResults.length; i++) {
                         if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                            aBooleanLocationPermissionGranted = false;
+                            locationPermissionGranted = false;
                             Log.d(TAG, "getLocationPermission: request failed");
                             return;
                         }
                     }
                     // if permission is granted then initialize the map
                     Log.d(TAG, "getLocationPermission: request granted");
-                    aBooleanLocationPermissionGranted = true;
+                    locationPermissionGranted = true;
                     initMap();
                 }
             }
@@ -308,33 +292,31 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         String url = stringBuilder.toString();
         System.out.println(url);
 
-        Object passData[] = new Object[2];
+        Object passData[] = new Object[3];
         passData[0] = mMap;
         passData[1] = url;
+        passData[2] = getApplicationContext();
 
-        NearbyRestaurant nearbyRestaurant = new NearbyRestaurant(new NearbyRestaurant.taskInterface() {
+        GetNearbyRestaurant nearbyRestaurant = new GetNearbyRestaurant(new GetNearbyRestaurant.taskInterface() {
+            ArrayList<RestaurantDetail> restaurantArrayListNew = new ArrayList<>();
+
             @Override
             public void passResult(ArrayList restaurantArrayList) {
-                System.out.println(restaurantArrayList);
-                System.out.println("WOWOWOWOWOWW" + restaurantArrayList.size());
                 restaurantArrayListNew = restaurantArrayList;
-                for (int i = 0; i < restaurantArrayListNew.size(); i++) {
-
-                    System.out.println(restaurantArrayListNew.get(i));
-                    RestaurantDetail x = (RestaurantDetail) restaurantArrayListNew.get(i);
-                    System.out.println(x.getName());
-                    System.out.println(x.getVicinity());
-                    System.out.println(x.getRating());
-                    System.out.println(x.getPricelevel());
-                }
+                Intent intent = new Intent(MapActivity.this, RestaurantRecyclerView.class);
+                intent.putExtra("mylist", restaurantArrayListNew);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(intent);
             }
         });
         nearbyRestaurant.execute(passData);
         Log.d(TAG, "Locating Restaurant");
         Toast.makeText(this, "Showing Nearby Restaurants", Toast.LENGTH_LONG).show();
+    }
 
-        Intent intent = new Intent(MapActivity.this, ListNearbyRestaurant.class);
-        intent.putExtra("mylist", restaurantArrayListNew);
-        startActivity(intent);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        bottomNavigationView.setSelectedItemId(R.id.map);
     }
 }

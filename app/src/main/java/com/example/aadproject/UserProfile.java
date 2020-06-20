@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -41,7 +40,7 @@ public class UserProfile extends AppCompatActivity {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 editTextFullName.setText(documentSnapshot.getString("fullName"));
-                editTextemail.setText(documentSnapshot.getString("email"));
+                editTextemail.setText("Email address: " + documentSnapshot.getString("email"));
             }
         });
 
@@ -60,9 +59,16 @@ public class UserProfile extends AppCompatActivity {
                     case R.id.user_profile:
                         return true;
                     case R.id.map:
-                        Intent intent2 = new Intent(getApplicationContext(), MapActivity.class);
-                        startActivity(intent2);
+                        Intent mapIntent = new Intent(getApplicationContext(), MapActivity.class);
+                        mapIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         overridePendingTransition(0, 0);
+                        startActivity(mapIntent);
+                        return true;
+                    case R.id.restaurant:
+                        Intent restaurantIntent = new Intent(getApplicationContext(), RestaurantRecyclerView.class);
+                        restaurantIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        overridePendingTransition(0, 0);
+                        startActivity(restaurantIntent);
                         return true;
                 }
                 return false;
@@ -70,7 +76,7 @@ public class UserProfile extends AppCompatActivity {
         });
     }
 
-    public void logout(View view){
+    public void logout(View view) {
         FirebaseAuth.getInstance().signOut();
         startActivity(new Intent(getApplicationContext(), Login.class));
         finish();

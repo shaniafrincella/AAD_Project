@@ -8,11 +8,11 @@
     <item
         android:id="@+id/restaurant"
         android:icon="@drawable/resaturant_icon"
-        android:title="Restaurant"/>
+        android:title="Restaurant" />
     <item
         android:id="@+id/user_profile"
         android:icon="@drawable/user_icon"
-        android:title="Profile"/>
+        android:title="Profile" />
 
 
 </menu>

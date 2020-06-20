@@ -1,22 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
     tools:context=".UserProfile">
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
         android:id="@+id/user_bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         app:itemBackground="@color/background_colour"
         app:itemIconTint="@drawable/selector"
-        app:menu="@menu/menu_navigation"
-        android:layout_alignParentBottom="true">
+        app:itemTextColor="@drawable/selector"
+        app:menu="@menu/menu_navigation">
     </com.google.android.material.bottomnavigation.BottomNavigationView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="225dp"
+        android:background="@color/background_colour">
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -24,53 +30,70 @@
         android:padding="@dimen/layout_activity_padding">
 
         <TextView
+            android:id="@+id/empty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/empty"
-            android:layout_marginTop="100dp"/>
+            android:layout_marginTop="100dp" />
 
         <ImageView
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_centerInParent="true"
+            android:id="@+id/image_profile"
+            android:layout_width="@dimen/profile_image_size"
+            android:layout_height="@dimen/profile_image_size"
             android:layout_below="@+id/empty"
-            android:src="@drawable/user_profile_icon"/>
+            android:layout_centerInParent="true"
+            android:src="@drawable/user_profile_icon" />
+
+        <TextView
+            android:id="@+id/profile_full_name_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/image_profile"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/margin_left_profile"
+            android:layout_marginTop="50dp"
+            android:fontFamily="@font/muli_extralight"
+            android:padding="@dimen/profile_padding"
+            android:text="Name:"
+            android:textColor="@color/black"
+            android:textSize="@dimen/profile_text_size" />
 
         <TextView
             android:id="@+id/profile_full_name"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/image_profile"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="@dimen/margin_top_profile"
+            android:layout_toRightOf="@id/profile_full_name_title"
+            android:fontFamily="@font/muli_extralight"
+            android:padding="@dimen/profile_padding"
             android:text="Full Name"
-            android:padding="10dp"
-            android:textAlignment="center"
-            android:textSize="25sp"
             android:textColor="@color/black"
-            android:layout_marginTop="300dp"
-            android:fontFamily="@font/muli_black"/>
+            android:textSize="@dimen/profile_text_size" />
 
         <TextView
             android:id="@+id/profile_email"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Email"
-            android:padding="10dp"
-            android:textAlignment="center"
             android:layout_below="@+id/profile_full_name"
-            android:textSize="25sp"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/muli_extralight"
+            android:padding="@dimen/profile_padding"
+            android:text="Email"
+            android:textAlignment="center"
             android:textColor="@color/black"
-            android:fontFamily="@font/muli_black"/>
+            android:textSize="@dimen/profile_text_size" />
+
         <Button
             android:layout_width="150dp"
-            android:layout_centerInParent="true"
             android:layout_height="wrap_content"
-            android:background="@color/black"
             android:layout_below="@id/profile_email"
-            android:layout_marginTop="50dp"
-            android:text="LOG OUT"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="@dimen/margin_top_profile"
+            android:background="@color/black"
+            android:fontFamily="@font/muli_black"
             android:onClick="logout"
-            android:fontFamily="@font/muli_black"/>
-
-
+            android:text="LOGOUT" />
 
     </RelativeLayout>
 

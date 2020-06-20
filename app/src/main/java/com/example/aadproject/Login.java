@@ -71,7 +71,6 @@ public class  Login extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
 
         // authenticate the user
-
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -83,6 +82,7 @@ public class  Login extends AppCompatActivity {
                     editor.commit();
 
                     startActivity(new Intent(getApplicationContext(), MapActivity.class));
+                    finish();
                 } else {
                     Toast.makeText(Login.this, "Error ! " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
 
