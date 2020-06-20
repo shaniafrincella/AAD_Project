@@ -1,9 +1,19 @@
 package com.example.aadproject;
 
+/**
+ * This class wil be the main screen and display Google Map Layout
+ * Created by Shania Frincella
+ */
+
 import android.Manifest;
 import android.app.Dialog;
+import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -12,6 +22,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -48,7 +59,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener {
     public BottomNavigationView bottomNavigationView;
     private static final String TAG = "MapActivity";
     // handle the error for invalid services version
@@ -63,6 +74,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     //List of widgets
     private EditText editTextSearchText;
     private ImageView mGPS;
+    private SensorManager sensorManager;
+    private Sensor lightSensor;
+    private boolean lightSensorPresent;
 
     //List of variables
     private Boolean locationPermissionGranted = false;
@@ -76,6 +90,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        sensorManager = (SensorManager) getSystemService(Service.SENSOR_SERVICE);
+        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        if (lightSensor == null) {
+            lightSensorPresent = false;
+        } else {
+            lightSensorPresent = true;
+        }
 
         editTextSearchText = findViewById(R.id.input_search);
         mGPS = findViewById(R.id.gps_icon);
@@ -110,6 +132,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 return false;
             }
         });
+
 
     }
 
@@ -318,5 +341,37 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     protected void onResume() {
         super.onResume();
         bottomNavigationView.setSelectedItemId(R.id.map);
+        if (lightSensorPresent) {
+            sensorManager.registerListener(this, lightSensor, sensorManager.SENSOR_DELAY_NORMAL);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (lightSensorPresent) {
+            sensorManager.unregisterListener(this);
+        }
+    }
+
+    // Light Sensor Implementation
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (lightSensorPresent) {
+            WindowManager.LayoutParams params = getWindow().getAttributes();
+            float light = event.values[0];
+            if (light > 700) {
+                params.screenBrightness = 1.0f;
+            } else if (light < 350) {
+                params.screenBrightness = 0.4f;
+            } else if (light < 150) {
+                params.screenBrightness = 0.2f;
+            }
+            getWindow().setAttributes(params);
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 }
