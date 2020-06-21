@@ -1,6 +1,9 @@
 package com.example.aadproject;
 
-import android.graphics.Bitmap;
+/**
+ * This class declares the restaurant detail information using the getter method is used to
+ * retrieve the data and also implements the serializable interface
+ */
 
 import java.io.Serializable;
 

@@ -7,27 +7,17 @@
     android:background="@color/white"
     tools:context=".UserProfile">
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/user_bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:itemBackground="@color/background_colour"
-        app:itemIconTint="@drawable/selector"
-        app:itemTextColor="@drawable/selector"
-        app:menu="@menu/menu_navigation">
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="225dp"
-        android:background="@color/background_colour">
-    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/layout_activity_padding">
+        android:background="@color/white">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="90dp"
+            android:background="@color/background_colour"/>
 
         <TextView
             android:id="@+id/empty"
@@ -96,5 +86,17 @@
             android:text="LOGOUT" />
 
     </RelativeLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/user_bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:itemBackground="@color/background_colour"
+        app:itemIconTint="@drawable/selector"
+        app:itemTextColor="@drawable/selector"
+        app:menu="@menu/menu_navigation">
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
+
 
 </RelativeLayout>

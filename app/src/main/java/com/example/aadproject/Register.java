@@ -101,7 +101,7 @@ public class Register extends AppCompatActivity {
                             Log.d(TAG, "onSuccess: user profile is created for " + userID);
                         }
                     });
-                    //
+
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString(EMAIL_KEY, editTextEmail.getText().toString());
                     editor.commit();

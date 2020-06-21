@@ -19,7 +19,7 @@
     <dimen name="profile_text_size">25sp</dimen>
     <dimen name="profile_image_size">150dp</dimen>
     <dimen name="profile_padding">5dp</dimen>
-    <dimen name="margin_left_profile">65dp</dimen>
+    <dimen name="margin_left_profile">100dp</dimen>
     <dimen name="margin_top_profile">50dp</dimen>
     <dimen name="restaurant_name_display">20sp</dimen>
     <dimen name="restaurant_information_display">15sp</dimen>
